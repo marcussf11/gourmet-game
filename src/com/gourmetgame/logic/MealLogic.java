@@ -4,17 +4,19 @@ import com.gourmetgame.model.Meal;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 public final class MealLogic {
 
     public static final MealLogic instance = new MealLogic();
 
-    public Meal createNewMeal(String newMealName, HashMap<String, Boolean> propertiesHistory){
+    public Meal createNewMeal(String newMealName, LinkedHashMap<String, Boolean> propertiesHistory){
         return new Meal(newMealName, propertiesHistory);
     }
 
-    public void processAnswer(String property, boolean answer, HashSet<Meal> meals){
-        HashSet<Meal> remainMeals = (HashSet<Meal>) meals.clone();
+    public void processAnswer(String property, boolean answer, LinkedHashSet<Meal> meals){
+        LinkedHashSet<Meal> remainMeals = (LinkedHashSet<Meal>) meals.clone();
 
         remainMeals.stream().forEach(meal -> {
             //if meal have the property but the value is not equals the answer, than remove it
@@ -31,7 +33,7 @@ public final class MealLogic {
         });
     }
 
-    public boolean haveAnswer(HashSet<String> remainProperties, HashSet<Meal> remainMeals){
+    public boolean haveAnswer(LinkedHashSet<String> remainProperties, LinkedHashSet<Meal> remainMeals){
         return (remainMeals.size() == 1 || remainProperties.isEmpty());
     }
 

@@ -6,6 +6,8 @@ import com.gourmetgame.model.Meal;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 public class GourmetGame {
 
@@ -18,14 +20,14 @@ public class GourmetGame {
 
     public void start(){
 
-        HashSet<Meal> localDatabase =  database.getCopy();
-        HashSet<Meal> remainMeals = new HashSet<>();
+        LinkedHashSet<Meal> localDatabase =  database.getCopy();
+        LinkedHashSet<Meal> remainMeals = new LinkedHashSet<>();
 
         while(true) {
-            remainMeals = remainMeals.isEmpty() ? database.getCopy() : (HashSet<Meal>)localDatabase.clone();
+            remainMeals = remainMeals.isEmpty() ? database.getCopy() : (LinkedHashSet<Meal>)localDatabase.clone();
 
-            HashSet<String> availableProperties = propertiesLogic.updateAvailablePropertiesByMeals(remainMeals);
-            HashMap<String, Boolean> propertiesHistory = new HashMap<>();
+            LinkedHashSet<String> availableProperties = propertiesLogic.updateAvailablePropertiesByMeals(remainMeals);
+            LinkedHashMap<String, Boolean> propertiesHistory = new LinkedHashMap<>();
 
             screenLogic.showOKConfirmDialog(Strings.THINK_MEAL_YOU_LIKE);
 
@@ -49,7 +51,7 @@ public class GourmetGame {
         }
     }
 
-    private void guessMealByProperties(HashSet<Meal> remainMeals, HashSet<String> availableProperties, HashMap<String, Boolean> propertiesHistory){
+    private void guessMealByProperties(LinkedHashSet<Meal> remainMeals, LinkedHashSet<String> availableProperties, LinkedHashMap<String, Boolean> propertiesHistory){
         while (!mealLogic.haveAnswer(availableProperties, remainMeals)){
             String property = availableProperties.stream().findFirst().get();
             int answer = screenLogic.showYesNoConfirmDialog(Strings.getMealIsQuestionMessage(property));

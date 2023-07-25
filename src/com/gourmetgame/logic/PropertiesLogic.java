@@ -2,9 +2,7 @@ package com.gourmetgame.logic;
 
 import com.gourmetgame.model.Meal;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public final class PropertiesLogic {
 
@@ -14,8 +12,8 @@ public final class PropertiesLogic {
         storage.put(property, answer);
     }
 
-    public HashSet<String> updateAvailablePropertiesByMeals(HashSet<Meal> meals){
-        HashSet<String> properties = new HashSet();
+    public LinkedHashSet<String> updateAvailablePropertiesByMeals(LinkedHashSet<Meal> meals){
+        LinkedHashSet<String> properties = new LinkedHashSet();
 
         meals.stream().forEach( meal -> {
 
@@ -30,8 +28,8 @@ public final class PropertiesLogic {
         return properties;
     }
 
-    public HashSet<String> updateAvailablePropertiesByMealsExceptHistory(HashSet<Meal> meals, HashMap<String, Boolean> propertyHistory){
-        HashSet<String> properties = new HashSet();
+    public LinkedHashSet<String> updateAvailablePropertiesByMealsExceptHistory(LinkedHashSet<Meal> meals, LinkedHashMap<String, Boolean> propertyHistory){
+        LinkedHashSet<String> properties = new LinkedHashSet();
 
         meals.stream().forEach( meal -> {
 
