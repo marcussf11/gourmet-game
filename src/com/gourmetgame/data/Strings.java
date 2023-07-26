@@ -6,6 +6,8 @@ public final class Strings {
     public static final String THINK_MEAL_YOU_LIKE = "Pense em um prato que gosta!";
     public static final String QUESTION_INPUT_MEAL_NAME = "Qual prato você pensou?";
     public static final String SUCCESS_GUESS = "Acertei!  :D";
+    public static final String MEAL_CANT_BE_BLANK = "Prato não pode ser vazio";
+    public static final String PROPERTY_CANT_BE_BLANK = "Propriedade não pode ser vazia";
 
     private static final String INPUT_NEW_MEAL_MID = " é _______ mas ";
     private static final String INPUT_NEW_MEAL_END = " não.";

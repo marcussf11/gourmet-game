@@ -41,16 +41,11 @@ public class GourmetGame {
                 boolean rightAnswer = guessMeal(mealNameAnswer);
 
                 if (rightAnswer) {
-                    screenLogic.showOKConfirmDialog(Strings.SUCCESS_GUESS);
+                    confirm = screenLogic.showOKConfirmDialog(Strings.SUCCESS_GUESS);
+                    closeApp = confirm == -1 ? true : false;
                 } else {
-                    String newMealName = screenLogic.showInputDialog(Strings.QUESTION_INPUT_MEAL_NAME);
-                    String newMealProperty = screenLogic.showInputDialog(Strings.getNewMealInsertMessage(newMealName, mealNameAnswer));
-                    propertiesLogic.storeProperty(newMealProperty, true, propertiesHistory);
-
-                    Meal meal = mealLogic.createNewMeal(newMealName, propertiesHistory);
-                    localDatabase = database.insertMealLocalDatabase(localDatabase, meal);
-                    database.insertPropertyMealLocalDatabase(localDatabase, mealNameAnswer, newMealProperty, false);
-
+                    closeApp = insertNewMeal(mealNameAnswer, propertiesHistory, localDatabase);
+                    if(closeApp) break;
                 }
             }
         }
@@ -70,6 +65,29 @@ public class GourmetGame {
         return false;
     }
 
+    private boolean insertNewMeal(String mealNameAnswer, LinkedHashMap<String, Boolean> propertiesHistory, LinkedHashSet<Meal> localDatabase ){
+
+        String newMealName = "", newMealProperty = "";
+        while(newMealName.isBlank()) {
+            newMealName = screenLogic.showInputDialog(Strings.QUESTION_INPUT_MEAL_NAME);
+            if (newMealName == null) return true;
+            else if(newMealName.isBlank()) screenLogic.showOKConfirmDialog(Strings.MEAL_CANT_BE_BLANK);
+        }
+        while (newMealProperty.isBlank()) {
+            newMealProperty = screenLogic.showInputDialog(Strings.getNewMealInsertMessage(newMealName, mealNameAnswer));
+            if (newMealProperty == null) return true;
+            else if(newMealProperty.isBlank()) screenLogic.showOKConfirmDialog(Strings.PROPERTY_CANT_BE_BLANK);
+        }
+
+        propertiesLogic.storeProperty(newMealProperty, true, propertiesHistory);
+
+        Meal meal = mealLogic.createNewMeal(newMealName, propertiesHistory);
+        localDatabase = database.insertMealLocalDatabase(localDatabase, meal);
+        database.insertPropertyMealLocalDatabase(localDatabase, mealNameAnswer, newMealProperty, false);
+
+        return false;
+    }
+
     private boolean guessMeal(String mealAnswer){
         int finalAnswer = screenLogic.showYesNoConfirmDialog(Strings.getMealIsAnswerMessage(mealAnswer));
         return intToBoolean(finalAnswer);
@@ -78,4 +96,5 @@ public class GourmetGame {
     private boolean intToBoolean(int integer){
         return (integer == 0 ? true : false);
     }
+
 }
