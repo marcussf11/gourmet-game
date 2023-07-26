@@ -22,47 +22,52 @@ public class GourmetGame {
 
         LinkedHashSet<Meal> localDatabase =  database.getCopy();
         LinkedHashSet<Meal> remainMeals = new LinkedHashSet<>();
+        boolean closeApp = false;
 
-        while(true) {
+        while(!closeApp) {
             remainMeals = remainMeals.isEmpty() ? database.getCopy() : (LinkedHashSet<Meal>)localDatabase.clone();
 
             LinkedHashSet<String> availableProperties = propertiesLogic.updateAvailablePropertiesByMeals(remainMeals);
             LinkedHashMap<String, Boolean> propertiesHistory = new LinkedHashMap<>();
 
-            screenLogic.showOKConfirmDialog(Strings.THINK_MEAL_YOU_LIKE);
+            int confirm = screenLogic.showOKConfirmDialog(Strings.THINK_MEAL_YOU_LIKE);
+            closeApp = confirm == -1 ? true : false;
 
-            guessMealByProperties(remainMeals, availableProperties, propertiesHistory);
+            if(!closeApp){
+                closeApp = guessMealByProperties(remainMeals, availableProperties, propertiesHistory);
+                if(closeApp) break;
 
-            String mealNameAnswer = remainMeals.stream().findFirst().get().getMealName();
-            boolean rightAnswer = guessMeal(mealNameAnswer);
+                String mealNameAnswer = remainMeals.stream().findFirst().get().getMealName();
+                boolean rightAnswer = guessMeal(mealNameAnswer);
 
-            if (rightAnswer) {
-                screenLogic.showOKConfirmDialog(Strings.SUCCESS_GUESS);
-            } else {
-                String newMealName = screenLogic.showInputDialog(Strings.QUESTION_INPUT_MEAL_NAME);
-                String newMealProperty = screenLogic.showInputDialog(Strings.getNewMealInsertMessage(newMealName, mealNameAnswer));
-                propertiesLogic.storeProperty(newMealProperty, true, propertiesHistory);
+                if (rightAnswer) {
+                    screenLogic.showOKConfirmDialog(Strings.SUCCESS_GUESS);
+                } else {
+                    String newMealName = screenLogic.showInputDialog(Strings.QUESTION_INPUT_MEAL_NAME);
+                    String newMealProperty = screenLogic.showInputDialog(Strings.getNewMealInsertMessage(newMealName, mealNameAnswer));
+                    propertiesLogic.storeProperty(newMealProperty, true, propertiesHistory);
 
-                Meal meal = mealLogic.createNewMeal(newMealName, propertiesHistory);
-                localDatabase = database.insertMealLocalDatabase(localDatabase, meal);
-                database.insertPropertyMealLocalDatabase(localDatabase, mealNameAnswer, newMealProperty, false);
+                    Meal meal = mealLogic.createNewMeal(newMealName, propertiesHistory);
+                    localDatabase = database.insertMealLocalDatabase(localDatabase, meal);
+                    database.insertPropertyMealLocalDatabase(localDatabase, mealNameAnswer, newMealProperty, false);
 
+                }
             }
         }
     }
 
-    private void guessMealByProperties(LinkedHashSet<Meal> remainMeals, LinkedHashSet<String> availableProperties, LinkedHashMap<String, Boolean> propertiesHistory){
+    private boolean guessMealByProperties(LinkedHashSet<Meal> remainMeals, LinkedHashSet<String> availableProperties, LinkedHashMap<String, Boolean> propertiesHistory){
         while (!mealLogic.haveAnswer(availableProperties, remainMeals)){
             String property = availableProperties.stream().findFirst().get();
             int answer = screenLogic.showYesNoConfirmDialog(Strings.getMealIsQuestionMessage(property));
+            if(answer == -1) return true;
             boolean booleanAnswer = intToBoolean(answer);
 
             propertiesLogic.storeProperty(property, booleanAnswer, propertiesHistory);
-
             mealLogic.processAnswer(property, booleanAnswer, remainMeals);
-
             availableProperties = propertiesLogic.updateAvailablePropertiesByMealsExceptHistory(remainMeals,propertiesHistory);
         }
+        return false;
     }
 
     private boolean guessMeal(String mealAnswer){
